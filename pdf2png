@@ -1,0 +1,3 @@
+cd slides
+pdftoppm -scale-to-x -1 -scale-to-y 1000 -png ../slides.pdf page
+
