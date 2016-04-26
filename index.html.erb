@@ -1,6 +1,7 @@
 <%
 width = 1000
 height = 773
+start_video_at = 0
 %>
 
 <!-- 
@@ -90,9 +91,9 @@ height = 773
     <div class="ffwd">5s &gt;&gt;</div>
 
     <script>
-      // $('video').bind('loadedmetadata', function(){
-      //   this.currentTime = 50;
-      // }, false);
+      $('video').bind('loadedmetadata', function(){
+        this.currentTime = <%= start_video_at %>;
+      }, false);
 
       var video = $('video')[0];
 
