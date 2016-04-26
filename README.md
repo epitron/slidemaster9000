@@ -1,10 +1,13 @@
-# jQuery 1.4: What you need to know #
+# Slidemaster 9000
 
-This is an HTML5 Presentation given at Stir Trek 2: Iron Man Edition by Matt Nowack
+A slide presentation tool, as seen here:
 
- 
-  Copyright 2010 Google Inc.
- 
+  http://chris.ill-logic.com/systems-neuroscience/
+  http://chris.ill-logic.com/late-bound-object-lambda-architectures/
+  http://chris.ill-logic.com/paleo/
+
+Original code Copyright 2010 Google Inc.
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -18,4 +21,4 @@ This is an HTML5 Presentation given at Stir Trek 2: Iron Man Edition by Matt Now
   limitations under the License.
  
   Original slides: Marcin Wichary (mwichary@google.com)
-  Modifications: Ernest Delgado (ernestd@google.com), Alex Russell (slightlyoff@chromium.org), Matthew Nowack (mdnowack@gmail.com) 
+  Modifications: Ernest Delgado (ernestd@google.com), Alex Russell (slightlyoff@chromium.org), Matthew Nowack (mdnowack@gmail.com), Chris Gahan (chris@ill-logic.com)
