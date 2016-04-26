@@ -1,0 +1,355 @@
+<!-- 
+  Copyright 2010 Google Inc.
+ 
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ 
+  Original slides: Marcin Wichary (mwichary@google.com)
+  Modifications: Ernest Delgado (ernestd@google.com)
+                 Alex Russell (slightlyoff@chromium.org)
+                 Matthew Nowack (mdnowack@gmail.com)
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  
+    <title>Late-bound object lambda architectures (Ian Piumarta, 2008)</title>
+    
+    <link rel="stylesheet" type="text/css" href="style/main.css" media="screen, projection" />
+    <script type="text/javascript" src="script/jquery-1.4.2.js"></script>    
+    <script type="text/javascript" src="script/jquery-easing-1.3.js"></script>
+    <script type="text/javascript">
+      function show(text, target) {
+        var out = $('#' + target);
+        out.hide();
+        out.html(text);
+        out.fadeIn();
+      }
+    </script>
+  </head>
+
+  <body>
+
+  
+    <div class="presentation">
+      <div class="slides">
+      
+        <!-- title slide -->
+        <div class="slide">
+          <section class="center intro">
+            <hgroup>
+              <h2>Late-bound object lambda architectures</h2>
+              <h3>Ian Piumarta</h3>
+            </hgroup>
+            <p>Hasso-Plattner School of Design Thinking (Potsdam, 2008)<br>
+            <p class="quiet" style="font-size: 16px">
+              <b>NOTE:</b> To switch slides, use the mouse wheel, or the LEFT/RIGHT arrow keys.
+            </p>
+          </section>
+        </div>
+                
+        <!-- rest of slides -->
+        <% for filename in Dir["slides/*.png"].sort.drop(1) %>
+          <div class="slide">
+            <section class="center intro">
+              <img src="<%= filename %>" width=792 height=612>
+            </section>
+          </div>    
+        <% end %>
+        
+      </div> 
+    </div> 
+
+    <!-- vimeo video -->
+    <div style="position:absolute; left:0; bottom:0;">
+      <!-- <iframe src="http://player.vimeo.com/video/27570335?portrait=0&amp;color=ff0179&amp;autoplay=1" width="300" height="199" frameborder="0" webkitAllowFullScreen allowFullScreen></iframe> -->
+      <video controls autoplay=true autobuffer=true width="300" height="168">
+        <source src="video.mp4">
+      </video>
+    </div>
+
+    <div class="fbck">&lt;&lt; 5s</div>
+    <div class="playpause">play/pause</div>
+    <div class="ffwd">5s &gt;&gt;</div>
+
+    <script>
+      // $('video').bind('loadedmetadata', function(){
+      //   this.currentTime = 50;
+      // }, false);
+
+      var video = $('video')[0];
+
+      $(".playpause").click(function(){
+        if (video.paused) {
+          video.play();
+        } else {
+          video.pause();
+        }
+      })
+
+      $(".fbck").click(function(){
+        video.currentTime -= 5;
+      })
+      $(".ffwd").click(function(){
+        video.currentTime += 5;
+      })
+    </script>
+
+    <!-- LOTSA JAVASCRIPT -->    
+    
+    <script>
+      (function() {
+        // Since we don't have the fallback of attachEvent and
+        // other IE only stuff we won't try to run JS for IE.
+        // It will run though when using Google Chrome Frame
+        if (document.all) { return; }
+
+        var currentSlideNo;
+        var notesOn = false;
+        var slides = document.getElementsByClassName('slide');
+        var touchStartX = 0;     
+   
+        // var slide_hash = window.location.hash.replace(/#/, '');
+        // if (slide_hash) {
+        //   for (var i = 0, len = slides.length; i < len; i++) {
+        //     if (slides[i].id == slide_hash) {
+        //       currentSlideNo = i;
+        //       updateSlideClasses(); 
+        //     }
+        //   }
+        // }
+        
+        var spaces = /\s+/, a1 = [""];
+
+        var str2array = function(s) {
+          if (typeof s == "string" || s instanceof String) {
+            if (s.indexOf(" ") < 0) {
+              a1[0] = s;
+              return a1;
+            } else {
+              return s.split(spaces);
+            }
+          }
+          return s;
+        };
+
+        var trim = function(str) {
+          return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+        };
+
+        var addClass = function(node, classStr) {
+          classStr = str2array(classStr);
+          var cls = " " + node.className + " ";
+          for (var i = 0, len = classStr.length, c; i < len; ++i) {
+            c = classStr[i];
+            if (c && cls.indexOf(" " + c + " ") < 0) {
+              cls += c + " ";
+            }
+          }
+          node.className = trim(cls);
+        };
+
+        var removeClass = function(node, classStr) {
+          var cls;
+          if (classStr !== undefined) {
+            classStr = str2array(classStr);
+            cls = " " + node.className + " ";
+            for (var i = 0, len = classStr.length; i < len; ++i) {
+              cls = cls.replace(" " + classStr[i] + " ", " ");
+            }
+            cls = trim(cls);
+          } else {
+            cls = "";
+          }
+          if (node.className != cls) {
+            node.className = cls;
+          }
+        };
+
+        var getSlideEl = function(slideNo) {
+          if (slideNo > 0) {
+            return slides[slideNo - 1];
+          } else {
+            return null;
+          }
+        };
+
+        var getSlideTitle = function(slideNo) {
+          var el = getSlideEl(slideNo);
+          
+          if (el) {
+            return el.getElementsByTagName('header')[0].innerHTML;
+          } else {
+            return null;
+          }
+        };
+        
+        var changeSlideElClass = function(slideNo, className) {
+          var el = getSlideEl(slideNo);
+
+          if (el) {
+            removeClass(el, 'far-past past current future far-future');
+            addClass(el, className);
+          }
+        };
+        
+        var updateSlideClasses = function() {
+          window.location.hash = "slide" + currentSlideNo;
+          changeSlideElClass(currentSlideNo - 2, 'far-past');
+          changeSlideElClass(currentSlideNo - 1, 'past');
+          changeSlideElClass(currentSlideNo, 'current');
+          changeSlideElClass(currentSlideNo + 1, 'future');
+          changeSlideElClass(currentSlideNo + 2, 'far-future');                
+        };
+        
+        var nextSlide = function() {
+          if (currentSlideNo < slides.length) {
+            currentSlideNo++;
+          }
+          
+          updateSlideClasses();
+        };
+        
+        var prevSlide = function() {
+          if (currentSlideNo > 1) {
+            currentSlideNo--;
+          }
+          updateSlideClasses();
+        };
+        
+        var showNotes = function() {
+          var notes = document.querySelectorAll('.notes');
+          for (var i = 0, len = notes.length; i < len; i++) {
+            notes[i].style.display = (notesOn) ? 'none':'block';
+          }
+          notesOn = (notesOn) ? false:true;
+        };
+
+        var switch3D = function() {
+          if (document.body.className.indexOf('three-d') == -1) {
+            document.getElementsByClassName('presentation')[0].style.webkitPerspective = '1000px';
+            document.body.className += ' three-d';
+          } else {
+            window.setTimeout("document.getElementsByClassName('presentation')[0].style.webkitPerspective = '0';", 2000);
+            document.body.className = document.body.className.replace(/three-d/, '');
+          }
+        };
+
+        var handleBodyKeyDown = function(event) {
+          // console.log(event.keyCode);
+          switch (event.keyCode) {
+            case 37: // left arrow
+              prevSlide();
+              break;
+            case 39: // right arrow
+            // case 32: // space
+              nextSlide();
+              break;
+            case 50: // 2
+              showNotes();          
+              break;
+            case 51: // 3
+              switch3D();          
+              break;
+          }
+        };
+        
+        /** Event handler for mouse wheel event.
+         */
+        var handleMouseWheel = function(event) {
+          var delta = 0;
+          if (!event) /* For IE. */
+            event = window.event;
+          if (event.wheelDelta) { /* IE/Opera. */
+            delta = event.wheelDelta/120;
+          } else if (event.detail) { /** Mozilla case. */
+            /** In Mozilla, sign of delta is different than in IE.
+             * Also, delta is multiple of 3.
+             */
+            delta = -event.detail/3;
+          }
+          /** If delta is nonzero, handle it.
+           * Basically, delta is now positive if wheel was scrolled up,
+           * and negative, if wheel was scrolled down.
+           */
+          if (delta) {
+            if (delta > 0)
+              prevSlide();
+            else
+              nextSlide();
+          }
+          /*
+          */
+            
+          /** Prevent default actions caused by mouse wheel.
+           * That might be ugly, but we handle scrolls somehow
+           * anyway, so don't bother here..
+           */
+          if (event.preventDefault)
+            event.preventDefault();
+          event.returnValue = false;
+        }
+        
+
+        var addTouchListeners = function() {
+          document.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].pageX;
+          }, false);
+          document.addEventListener('touchend', function(e) {
+            var pixelsMoved = touchStartX - e.changedTouches[0].pageX;
+            var SWIPE_SIZE = 150;
+            if (pixelsMoved > SWIPE_SIZE) {
+              nextSlide();
+            }
+            else if (pixelsMoved < -SWIPE_SIZE) {
+             prevSlide();
+            }
+          }, false);
+        };
+
+        // initialize
+
+        (function() {
+          if (window.location.hash != "") {
+            currentSlideNo = Number(window.location.hash.replace('#slide', ''));
+          } else {
+            currentSlideNo = 1;
+          }
+   
+          document.addEventListener('keydown', handleBodyKeyDown, false);
+          document.addEventListener('DOMMouseScroll', handleMouseWheel, false);
+          document.addEventListener('mousewheel', handleMouseWheel, false);
+          //document.onmousewheel = handleMouseWheel;
+          
+          var els = slides;
+          for (var i = 0, el; el = els[i]; i++) {
+            addClass(el, 'slide far-future');
+          }
+          updateSlideClasses(); 
+
+          // add support for finger events (filter it by property detection?)
+          addTouchListeners();
+        })();
+      })();
+    </script>
+
+    <!--[if IE]>
+		<script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script> 
+		<script>CFInstall.check({ mode: "overlay" });</script> 
+    <![endif]--> 
+    
+</body>
+
+</html>
