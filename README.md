@@ -10,7 +10,7 @@ A slide presentation tool, as seen here:
 
   1. Put a file named "video.mp4" in the root
   2. Put your slides in "slides/" as jpg or png files
-    (Alternately, put "slides.pdf" in the root and run "pdf2png")
+    (Alternately, put "slides.pdf" in the root and run the included "./pdf2png" script)
   3. Edit index.html.erb and set the width/height of your slides
   4. Edit style/main.scss and set the width/height of your slides
   5. Run "make"
