@@ -2,18 +2,18 @@
 
 A slide presentation tool, as seen here:
 
-  http://chris.ill-logic.com/systems-neuroscience/
-  http://chris.ill-logic.com/late-bound-object-lambda-architectures/
-  http://chris.ill-logic.com/paleo/
+  * http://chris.ill-logic.com/systems-neuroscience/
+  * http://chris.ill-logic.com/late-bound-object-lambda-architectures/
+  * http://chris.ill-logic.com/paleo/
 
 # Usage
 
- 1. Put a file named "video.mp4" in the root
- 2. Put your slides in "slides/" as jpg or png files
+  1. Put a file named "video.mp4" in the root
+  2. Put your slides in "slides/" as jpg or png files
     (Alternately, put "slides.pdf" in the root and run "pdf2png")
- 3. Edit index.html.erb and set the width/height of your slides
- 4. Edit style/main.scss and set the width/height of your slides
- 5. Run "make"
+  3. Edit index.html.erb and set the width/height of your slides
+  4. Edit style/main.scss and set the width/height of your slides
+  5. Run "make"
 
 # License
 
