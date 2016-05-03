@@ -6,6 +6,15 @@ A slide presentation tool, as seen here:
   * http://chris.ill-logic.com/late-bound-object-lambda-architectures/
   * http://chris.ill-logic.com/paleo/
 
+# Installation
+
+The prerequisites are:
+  * poppler
+  * poppler-data (international text)
+  * ruby
+  * erb (should come with ruby)
+  * sass (ruby gem)
+
 # Usage
 
   1. Put a file named "video.mp4" in the root
