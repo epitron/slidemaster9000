@@ -3,6 +3,7 @@
 A slide presentation tool, as seen here:
 
   * http://chris.ill-logic.com/systems-neuroscience/
+  * http://chris.ill-logic.com/deep-learning-tutorial/
   * http://chris.ill-logic.com/late-bound-object-lambda-architectures/
   * http://chris.ill-logic.com/paleo/
 
