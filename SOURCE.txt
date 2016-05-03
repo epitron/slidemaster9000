@@ -1,0 +1,2 @@
+slides.pdf: http://www.iro.umontreal.ca/~bengioy/talks/DL-Tutorial-NIPS2015.pdf
+video.mp4: https://www.youtube.com/watch?v=hA2FJ5NjvOA (remove first 84 seconds)
